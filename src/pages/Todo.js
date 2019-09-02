@@ -15,7 +15,8 @@ import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import AddIcon from '@material-ui/icons/Add';
-
+import DoneIcon from '@material-ui/icons/Done';
+import AllInboxRoundedIcon from '@material-ui/icons/AllInboxRounded';
 import Dialog from '@material-ui/core/Dialog';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
@@ -36,6 +37,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import CustomCard from './CustomCard'
+
+import {connect } from 'react-redux';
+import {bindActionCreators} from 'redux'
+import addCompleted from '../actions/completed';
 const useStyles = theme => ({
   card: {
     width: "30%",
@@ -89,7 +94,7 @@ class Todo extends React.Component {
     constructor(props) {
       super(props);
       this.textRef = React.createRef();
-      this.state = {date:"test",open: false, UpdateDialog: false,statedata:[],currenttask:{},RemoveDialog:false,DoneDialog:false};
+      this.state = {date:"test",open: false, UpdateDialog: false,statedata:[],currenttask:{},RemoveDialog:false,DoneDialog:false,showComplete:false};
       this.handleOnClick = this.handleOnClick.bind(this);
       this.handleClose = this.handleClose.bind(this);
       var month =new Date().getMonth()+1
@@ -121,6 +126,13 @@ class Todo extends React.Component {
       console.log(this.state.txvalue_date)
     }
     
+    handlecomplete(task) {
+    
+      this.setState(state => ({
+        showComplete: task
+      }));
+      }
+
 
    handleClickOpen() {
     
@@ -229,12 +241,22 @@ class Todo extends React.Component {
       this.UpdateDialogClose()
       this. RemoveDialogClose()
       this.DoneDialogClose()
+      if (method==="DoneTodo"){
+        this.props.Oncompletetask({
+          id:this.state.currenttask.id,
+          title : this.state.currenttask.title,
+          description :this.state.currenttask.description,
+          date : this.state.currenttask.date,
+          state: "Done"
+      })
+      }
       this.setState(state => ({
         txvalue_title: "",
         txvalue_description:"",
         txvalue_date:""
         
       }));
+      
     }
     setserver( e) {
       console.log('statedata '+ e);
@@ -244,6 +266,7 @@ class Todo extends React.Component {
         
       }
     render() {
+      console.log(this.props)
       const { classes } = this.props;
       console.log("statedata is"+this.state.statedata)
       var namesList = this.state.statedata.map(function iterator(name){
@@ -265,6 +288,26 @@ class Todo extends React.Component {
                         </ListItem>
                         
                     },this)
+
+                    var completed = this.props.todoes.todos.map(function iterator(name){
+                      return <ListItem>
+                                {/* <Card >{name.description}                                                                   
+                                </Card> */}
+                                <Card>
+                                <CardContent>
+                                <CustomCard key={name.id} open={name} conn={this.connection} parentMethod={this.get1} data={this.state.statedata}/>
+                                </CardContent>
+                             
+                                </Card>
+                        </ListItem>
+                        
+                    },this);
+                    var showlist;
+                    if(this.state.showComplete){
+                        showlist=completed
+                    }else{
+                      showlist=namesList
+                    };
       return (
         <React.Fragment>
          <AppBar position="fixed">
@@ -273,6 +316,12 @@ class Todo extends React.Component {
                         Todo App
                     </Typography>
                     <div className={classes.grow} />
+                    <IconButton onClick={()=>this.handlecomplete(false)} color="inherit" aria-label="Open drawer">
+                        <AllInboxRoundedIcon />
+                    </IconButton>
+                    <IconButton onClick={()=>this.handlecomplete(true)}  color="inherit" aria-label="Open drawer">
+                        <DoneIcon />
+                    </IconButton>
                     <IconButton onClick={this.handleClickOpen.bind(this)} color="inherit" aria-label="Open drawer">
                         <AddIcon />
                     </IconButton>
@@ -284,8 +333,11 @@ class Todo extends React.Component {
       <Button variant="outlined" color="primary" onClick={this.handleClickOpen.bind(this)}>
         Open full-screen dialog
       </Button>
-
-      <List>{ namesList }</List>
+        
+          <List>{ showlist}</List>
+        
+    
+      
       <Dialog open={this.state.open} onClose={this.handleClose.bind(this)} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add New  Task</DialogTitle>
         <DialogContent>
@@ -501,6 +553,26 @@ class Todo extends React.Component {
     close(){
       this.connection.close()
     }
+    savestate(){
+      var state=this.props.todoes
+      var statestring =JSON.stringify(state)
+      console.log(statestring)
+    }
   }
 
-  export default withStyles(useStyles)(Todo)
+  const mapStateToProps =(state ,props )=>{
+    console.log(props)
+    return{todoes : state  
+    }
+    
+  }
+
+  const mapActionsToProps = (dispatch, props)=>
+{return bindActionCreators({
+  Oncompletetask:addCompleted
+},dispatch)
+    
+}
+
+
+  export default withStyles(useStyles)(connect(mapStateToProps,mapActionsToProps)(Todo)) 
