@@ -286,7 +286,59 @@ class Todo extends React.Component {
       </Button>
 
       <List>{ namesList }</List>
-      <Dialog fullScreen open={this.state.open} onClose={this.handleClose.bind(this)} TransitionComponent={Transition}>
+      <Dialog open={this.state.open} onClose={this.handleClose.bind(this)} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Add New  Task</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter fields for Task
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Enter title"
+            onChange={this.handleChange_title}
+            value= {this.state.txvalue_title}
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Enter Description"
+            onChange={this.handleChange_description}
+            value= {this.state.txvalue_description}
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            type="date"
+            label="Enter Date"
+            // defaultValue={this.date }
+            onChange={this.handleChange_date}
+            value= {this.state.txvalue_date}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleClose.bind(this)} color="primary">
+            Cancel
+          </Button>
+          <Button  onClick={()=>this.handleClick("AddTodo")}color="primary">
+            Add Todo
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
+
+      
+      {/* <Dialog fullScreen open={this.state.open} onClose={this.handleClose.bind(this)} TransitionComponent={Transition}> */}
+      
+      <Dialog  onClose={this.handleClose.bind(this)} TransitionComponent={Transition}>
         <AppBar className={classes.appBar}>
           <Toolbar>
             
@@ -430,6 +482,9 @@ class Todo extends React.Component {
           </Button>
         </DialogActions>
       </Dialog>
+
+
+    
 
     </div>
            
