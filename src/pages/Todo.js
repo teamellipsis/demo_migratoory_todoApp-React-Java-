@@ -93,11 +93,15 @@ class Todo extends React.Component {
       this.handleOnClick = this.handleOnClick.bind(this);
       this.handleClose = this.handleClose.bind(this);
       var month =new Date().getMonth()+1
+      var date = new Date().getDate()
       if(month<10){
         var month="0"+new Date().getMonth()
       }
-      this.date = new Date().getFullYear()+"-"+month+"-"+new Date().getDate()
-      // console.log(this.date)
+      if(date<10){
+        var date="0"+new Date().getDate()
+      }
+      this.date = new Date().getFullYear()+"-"+month+"-"+date
+      console.log(this.date)
       this.handleChange_title = this.handleChange_title.bind(this);
       this.handleChange_description = this.handleChange_description.bind(this);
       this.handleChange_date = this.handleChange_date.bind(this);
